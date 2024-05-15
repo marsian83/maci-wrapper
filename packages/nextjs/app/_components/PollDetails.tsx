@@ -106,7 +106,6 @@ export default function PollDetail() {
     // };
   }, [poll]);
 
-
   // const { data: coordinatorPubKeyResult } = useContractRead({
   //   abi: PollAbi,
   //   address: poll?.pollContracts.poll,

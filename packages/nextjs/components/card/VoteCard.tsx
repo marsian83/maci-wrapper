@@ -24,7 +24,7 @@ const VoteCard = ({ index, candidate, onChange, pollType, isInvalid, setIsInvali
         className={twMerge(
           "bg-slate-800 flex w-full p-4 rounded-lg cursor-pointer text-lg font-semibold duration-300",
           !selected && "hover:brightness-125 hover:bounce",
-          selected && "bg-slate-700"
+          selected && "bg-slate-700",
         )}
         htmlFor={index.toString()}
       >
