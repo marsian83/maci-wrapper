@@ -14,11 +14,41 @@ import { PollStatus, PollType } from "~~/types/poll";
 import { getDataFromPinata } from "~~/utils/pinata";
 import { notification } from "~~/utils/scaffold-eth";
 
-export default function PollDetail({ id }: { id: bigint }) {
-  const { data: poll, error, isLoading } = useFetchPoll(id);
+export default function PollDetail() {
+  // const { data: poll, error, isLoading } = useFetchPoll(id);
+  const poll: {
+    id: bigint;
+    name: string;
+    encodedOptions: `0x${string}`;
+    metadata: string;
+    pollContracts: {
+      poll: string;
+      messageProcessor: string;
+      tally: string;
+    };
+    startTime: bigint;
+    endTime: bigint;
+    numOfOptions: bigint;
+    options: readonly string[];
+    tallyJsonCID: string;
+  } = {
+    id: BigInt(0),
+    encodedOptions: `0x`,
+    metadata: `{"pollType":1}`,
+    pollContracts: { poll: "Why", messageProcessor: "processor", tally: "treffle" },
+    name: "Which one do you use?",
+    startTime: BigInt(Date.now()),
+    endTime: BigInt(Date.now() + 100000),
+    numOfOptions: BigInt(2),
+    options: ["I use on chain", "I use on-chain"],
+    tallyJsonCID: "",
+  };
+
+  const isLoading = false;
+  const error = undefined;
   const [pollType, setPollType] = useState(PollType.NOT_SELECTED);
 
-  useAuthUserOnly({});
+  // useAuthUserOnly({});
 
   const { keypair, stateIndex } = useAuthContext();
 
@@ -28,7 +58,7 @@ export default function PollDetail({ id }: { id: bigint }) {
 
   const isAnyInvalid = Object.values(isVotesInvalid).some(v => v);
   const [result, setResult] = useState<{ candidate: string; votes: number }[] | null>(null);
-  const [status, setStatus] = useState<PollStatus>();
+  const [status, setStatus] = useState<PollStatus>(PollStatus.OPEN);
 
   useEffect(() => {
     if (!poll || !poll.metadata) {
@@ -67,113 +97,114 @@ export default function PollDetail({ id }: { id: bigint }) {
       })();
     }
 
-    const statusUpdateInterval = setInterval(async () => {
-      setStatus(getPollStatus(poll));
-    }, 1000);
+    // const statusUpdateInterval = setInterval(async () => {
+    //   setStatus(getPollStatus(poll));
+    // }, 1000);
 
-    return () => {
-      clearInterval(statusUpdateInterval);
-    };
+    // return () => {
+    //   clearInterval(statusUpdateInterval);
+    // };
   }, [poll]);
 
-  const { data: coordinatorPubKeyResult } = useContractRead({
-    abi: PollAbi,
-    address: poll?.pollContracts.poll,
-    functionName: "coordinatorPubKey",
-  });
 
-  const { writeAsync: publishMessage } = useContractWrite({
-    abi: PollAbi,
-    address: poll?.pollContracts.poll,
-    functionName: "publishMessage",
-  });
+  // const { data: coordinatorPubKeyResult } = useContractRead({
+  //   abi: PollAbi,
+  //   address: poll?.pollContracts.poll,
+  //   functionName: "coordinatorPubKey",
+  // });
 
-  const { writeAsync: publishMessageBatch } = useContractWrite({
-    abi: PollAbi,
-    address: poll?.pollContracts.poll,
-    functionName: "publishMessageBatch",
-  });
+  // const { writeAsync: publishMessage } = useContractWrite({
+  //   abi: PollAbi,
+  //   address: poll?.pollContracts.poll,
+  //   functionName: "publishMessage",
+  // });
 
-  const [coordinatorPubKey, setCoordinatorPubKey] = useState<PubKey>();
+  // const { writeAsync: publishMessageBatch } = useContractWrite({
+  //   abi: PollAbi,
+  //   address: poll?.pollContracts.poll,
+  //   functionName: "publishMessageBatch",
+  // });
 
-  useEffect(() => {
-    if (!coordinatorPubKeyResult) {
-      return;
-    }
+  // const [coordinatorPubKey, setCoordinatorPubKey] = useState<PubKey>();
 
-    const coordinatorPubKey_ = new PubKey([
-      BigInt((coordinatorPubKeyResult as any)[0].toString()),
-      BigInt((coordinatorPubKeyResult as any)[1].toString()),
-    ]);
+  // useEffect(() => {
+  //   if (!coordinatorPubKeyResult) {
+  //     return;
+  //   }
 
-    setCoordinatorPubKey(coordinatorPubKey_);
-  }, [coordinatorPubKeyResult]);
+  //   const coordinatorPubKey_ = new PubKey([
+  //     BigInt((coordinatorPubKeyResult as any)[0].toString()),
+  //     BigInt((coordinatorPubKeyResult as any)[1].toString()),
+  //   ]);
 
-  const castVote = async () => {
-    if (!poll || stateIndex == null || !coordinatorPubKey || !keypair) return;
+  //   setCoordinatorPubKey(coordinatorPubKey_);
+  // }, [coordinatorPubKeyResult]);
 
-    // check if the votes are valid
-    if (isAnyInvalid) {
-      notification.error("Please enter a valid number of votes");
-      return;
-    }
+  // // const castVote = async () => {
+  // //   if (!poll || stateIndex == null || !coordinatorPubKey || !keypair) return;
 
-    // check if no votes are selected
-    if (votes.length === 0) {
-      notification.error("Please select at least one option to vote");
-      return;
-    }
+  // //   // check if the votes are valid
+  // //   if (isAnyInvalid) {
+  // //     notification.error("Please enter a valid number of votes");
+  // //     return;
+  // //   }
 
-    // check if the poll is closed
-    if (status !== PollStatus.OPEN) {
-      notification.error("Voting is closed for this poll");
-      return;
-    }
+  // //   // check if no votes are selected
+  // //   if (votes.length === 0) {
+  // //     notification.error("Please select at least one option to vote");
+  // //     return;
+  // //   }
 
-    const votesToMessage = votes.map((v, i) =>
-      getMessageAndEncKeyPair(
-        stateIndex,
-        poll.id,
-        BigInt(v.index),
-        BigInt(v.votes),
-        BigInt(votes.length - i),
-        coordinatorPubKey,
-        keypair,
-      ),
-    );
+  // //   // check if the poll is closed
+  // //   if (status !== PollStatus.OPEN) {
+  // //     notification.error("Voting is closed for this poll");
+  // //     return;
+  // //   }
 
-    try {
-      if (votesToMessage.length === 1) {
-        await publishMessage({
-          args: [
-            votesToMessage[0].message.asContractParam() as unknown as {
-              msgType: bigint;
-              data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
-            },
-            votesToMessage[0].encKeyPair.pubKey.asContractParam() as unknown as { x: bigint; y: bigint },
-          ],
-        });
-      } else {
-        await publishMessageBatch({
-          args: [
-            votesToMessage.map(
-              v =>
-                v.message.asContractParam() as unknown as {
-                  msgType: bigint;
-                  data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
-                },
-            ),
-            votesToMessage.map(v => v.encKeyPair.pubKey.asContractParam() as { x: bigint; y: bigint }),
-          ],
-        });
-      }
+  //   const votesToMessage = votes.map((v, i) =>
+  //     getMessageAndEncKeyPair(
+  //       stateIndex,
+  //       poll.id,
+  //       BigInt(v.index),
+  //       BigInt(v.votes),
+  //       BigInt(votes.length - i),
+  //       coordinatorPubKey,
+  //       keypair,
+  //     ),
+  //   );
 
-      notification.success("Vote casted successfully");
-    } catch (err) {
-      console.log("err", err);
-      notification.error("Casting vote failed, please try again ");
-    }
-  };
+  //   try {
+  //     if (votesToMessage.length === 1) {
+  //       await publishMessage({
+  //         args: [
+  //           votesToMessage[0].message.asContractParam() as unknown as {
+  //             msgType: bigint;
+  //             data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
+  //           },
+  //           votesToMessage[0].encKeyPair.pubKey.asContractParam() as unknown as { x: bigint; y: bigint },
+  //         ],
+  //       });
+  //     } else {
+  //       await publishMessageBatch({
+  //         args: [
+  //           votesToMessage.map(
+  //             v =>
+  //               v.message.asContractParam() as unknown as {
+  //                 msgType: bigint;
+  //                 data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
+  //               },
+  //           ),
+  //           votesToMessage.map(v => v.encKeyPair.pubKey.asContractParam() as { x: bigint; y: bigint }),
+  //         ],
+  //       });
+  //     }
+
+  //     notification.success("Vote casted successfully");
+  //   } catch (err) {
+  //     console.log("err", err);
+  //     notification.error("Casting vote failed, please try again ");
+  //   }
+  // };
 
   function getMessageAndEncKeyPair(
     stateIndex: bigint,
@@ -226,7 +257,7 @@ export default function PollDetail({ id }: { id: bigint }) {
     <div className="container mx-auto pt-10">
       <div className="flex h-full flex-col md:w-2/3 lg:w-1/2 mx-auto">
         <div className="flex flex-row items-center my-5">
-          <div className="text-2xl font-bold ">Vote for {poll?.name}</div>
+          <div className="text-2xl font-bold ">{poll?.name}</div>
         </div>
         {poll?.options.map((candidate, index) => (
           <div className="pb-5 flex" key={index}>
@@ -245,11 +276,11 @@ export default function PollDetail({ id }: { id: bigint }) {
         {status === PollStatus.OPEN && (
           <div className={`mt-2 shadow-2xl`}>
             <button
-              onClick={castVote}
+              // onClick={castVote}
               disabled={!true}
-              className="hover:border-black border-2 border-accent w-full text-lg text-center bg-accent py-3 rounded-xl font-bold"
+              className="hover:border-black duration-300 bg-yellow-500 text-black border-2 border-yellow-400 w-full text-lg text-center py-3 rounded-xl font-bold active:scale-90"
             >
-              {true ? "Vote Now" : "Voting Closed"}{" "}
+              {true ? "Cast Vote" : "Voting Closed"}{" "}
             </button>
           </div>
         )}

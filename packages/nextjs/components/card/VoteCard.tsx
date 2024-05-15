@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { PollType } from "~~/types/poll";
 
 type VoteCardProps = {
@@ -19,12 +20,20 @@ const VoteCard = ({ index, candidate, onChange, pollType, isInvalid, setIsInvali
 
   return (
     <>
-      <div className="bg-primary flex w-full px-2 py-2 rounded-lg">
+      <label
+        className={twMerge(
+          "bg-slate-800 flex w-full p-4 rounded-lg cursor-pointer text-lg font-semibold duration-300",
+          !selected && "hover:brightness-125 hover:bounce",
+          selected && "bg-slate-700"
+        )}
+        htmlFor={index.toString()}
+      >
         {pollOpen && (
           <input
             type={pollType === PollType.SINGLE_VOTE ? "radio" : "checkbox"}
-            className="mr-2"
+            className="mr-5 scale-125"
             value={index}
+            id={index.toString()}
             onChange={e => {
               console.log(e.target.checked);
               setSelected(e.target.checked);
@@ -58,7 +67,7 @@ const VoteCard = ({ index, candidate, onChange, pollType, isInvalid, setIsInvali
         )}
 
         <div className={!pollOpen ? "ml-2" : ""}>{candidate}</div>
-      </div>
+      </label>
 
       {pollOpen && pollType === PollType.WEIGHTED_MULTIPLE_VOTE && (
         <input
