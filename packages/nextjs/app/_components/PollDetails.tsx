@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { genRandomSalt } from "maci-crypto";
 import { Keypair, PCommand, PubKey } from "maci-domainobjs";
 import { useContractRead, useContractWrite } from "wagmi";
@@ -15,9 +14,7 @@ import { PollStatus, PollType } from "~~/types/poll";
 import { getDataFromPinata } from "~~/utils/pinata";
 import { notification } from "~~/utils/scaffold-eth";
 
-export default function PollDetail() {
-  const { id } = useParams<{ id: string }>();
-
+export default function PollDetail({ id }: { id: bigint }) {
   const { data: poll, error, isLoading } = useFetchPoll(id);
   const [pollType, setPollType] = useState(PollType.NOT_SELECTED);
 

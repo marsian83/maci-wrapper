@@ -1,58 +1,53 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import PollDetail from "./_components/PollDetails";
 import RegisterButton from "./_components/RegisterButton";
-import PollDetail from "./polls/[id]/page";
 import type { NextPage } from "next";
 import { useAccount, useNetwork } from "wagmi";
-import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { SwitchTheme } from "~~/components/SwitchTheme";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useAuthContext } from "~~/contexts/AuthContext";
-import { useAuthUserOnly } from "~~/hooks/useAuthUserOnly";
+import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 const Home: NextPage = () => {
-  useAuthUserOnly({ inverted: true });
-
   const { address } = useAccount();
-  const { chain, chains } = useNetwork();
+  const { chain } = useNetwork();
+  const chains = getTargetNetworks();
 
   const { isRegistered } = useAuthContext();
 
   const [usable, setUsable] = useState(false);
 
+  const { data: owner } = useScaffoldContractRead({ contractName: "MACIWrapper", functionName: "owner" });
+  const { data: nextPollId } = useScaffoldContractRead({ contractName: "MACIWrapper", functionName: "nextPollId" });
+  const currentPollId = nextPollId === undefined ? undefined : nextPollId - 1n;
+
   useEffect(() => {
-    if (chain && chain.id && (chain.id == chains[0].id || chain.id == chains[1].id)) {
-      setUsable(true);
-    } else {
-      setUsable(false);
+    if (!chains) {
+      return;
     }
-  }, [chain, address]);
+    setUsable(chains.some(c => c.id == chain?.id));
+  }, [chain, chains]);
 
   return (
     <>
       <main className="w-full h-screen bg-black relative">
         <div className="flex flex-col gap-y-5 my-10 items-center">
           <div className="">
-            <h1 className="text-4xl font-bold text-center">Let's settle the debate</h1>
+            <h1 className="text-4xl font-bold text-center">Let&apos;s settle the debate</h1>
             <h2 className="text-3xl font-bold text-center">once and for all</h2>
           </div>
-          {!usable && <RainbowKitCustomConnectButton />}
-          {usable && !isRegistered && <RegisterButton />}
-          {usable && isRegistered && (
-            <div className="mt-16 p-6 rounded-2xl bg-slate-800 flex flex-col items-center">
-              <h1 className="font-bold text-3xl">Which one do you use?</h1>
-
-              <div className="mt-10 flex flex-col gap-y-6">
-                {["I use onchain", "I use on-chain"].map((item, key) => (
-                  <button
-                    key={key}
-                    className="text-left bg-black py-2 px-10 font-medium rounded-full flex items-center gap-x-4 text-xl group"
-                  >
-                    <figure className="bg-gray-500 h-[0.9em] aspect-square rounded-full outline outline-gray-400 outline-offset-2 outline-1 group-hover:bg-white duration-300 group-hover:outline-white" />
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {!usable ? (
+            <RainbowKitCustomConnectButton />
+          ) : !isRegistered ? (
+            <RegisterButton />
+          ) : currentPollId !== undefined ? (
+            <PollDetail id={currentPollId} />
+          ) : (
+            <div>Poll not found</div>
           )}
 
           <div className="mt-14 bg-slate-600 rounded-3xl flex overflow-hidden w-2/3">
@@ -67,8 +62,19 @@ const Home: NextPage = () => {
           </div>
 
           <div className="absolute right-6 bottom-2 flex items-center flex-col">
-            <FaucetButton />
-            <p className="text-xs mt-1">Get tokens from faucet</p>
+            {/* <FaucetButton />
+
+            <p className="text-xs mt-1">Get tokens from faucet</p> */}
+            {owner == address && (
+              <Link
+                href={"/admin"}
+                passHref
+                className={`hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+              >
+                Admin Panel
+              </Link>
+            )}
+            <SwitchTheme className={`pointer-events-auto ${true ? "self-end md:self-auto" : ""}`} />
           </div>
         </div>
       </main>
