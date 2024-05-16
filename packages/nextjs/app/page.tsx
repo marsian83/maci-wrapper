@@ -56,7 +56,7 @@ const Home: NextPage = () => {
           <PollDetail />
 
           <div className="mt-14 bg-slate-800 rounded-3xl flex overflow-hidden w-[90vw] mobile:flex-col">
-            <img className="w-full aspect-video object-cover object-top" src="/fai.jpg" />
+            <img className="w-full aspect-square mobile:aspect-video object-cover object-top" src="/fai.jpg" />
             <div className="flex flex-col p-5 gap-y-3 mobile:gap-y-0">
               <h1 className="text-2xl font-bold mobile:text-lg">Cast your Vote securely and privately</h1>
               <p className="mobile:text-sm">
