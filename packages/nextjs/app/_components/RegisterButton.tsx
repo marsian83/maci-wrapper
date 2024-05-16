@@ -21,7 +21,10 @@ export default function RegisterButton() {
 
   if (!keypair) {
     return (
-      <button className="border border-slate-600 bg-primary px-3 py-2 rounded-lg font-bold" onClick={generateKeypair}>
+      <button
+        className="border border-slate-600 rounded-lg font-bold bg-yellow-500 text-black px-20 py-3 text-lg"
+        onClick={generateKeypair}
+      >
         Login
       </button>
     );
@@ -32,7 +35,10 @@ export default function RegisterButton() {
   return (
     <>
       (You are not registered yet)
-      <button className="border border-slate-600 bg-primary px-3 py-2 rounded-lg font-bold" onClick={register}>
+      <button
+        className="border border-slate-600 rounded-lg font-bold font-bold bg-yellow-500 text-black px-20 py-3 text-lg"
+        onClick={register}
+      >
         Register Here
       </button>
     </>

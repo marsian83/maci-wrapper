@@ -42,15 +42,18 @@ const Home: NextPage = () => {
             <h2 className="text-3xl font-bold text-center">once and for all</h2>
           </div>
           {/* {!usable ? (
-            <RainbowKitCustomConnectButton />
           ) : !isRegistered ? (
-            <RegisterButton />
           ) : currentPollId !== undefined ? (
           ) : (
-            <div>Poll not found</div>
           )} */}
+          <RainbowKitCustomConnectButton />
+          {/* <RegisterButton /> */}
+          {/* <div className="flex flex-col items-center gap-y-5">
+            <img src="https://cdn3d.iconscout.com/3d/premium/thumb/people-getting-404-not-found-11282893-9091569.png?f=webp" alt="" />
+            <h2 className="font-semibold text-3xl text-red-500">Poll you were looking for was not found</h2>
+          </div> */}
           {/* <PollDetail/> id={currentPollId} /> */}
-          <PollDetail />
+          {/* <PollDetail /> */}
 
           <div className="mt-14 bg-slate-800 rounded-3xl flex overflow-hidden w-2/3">
             <img className="h-[30vh] aspect-square object-cover" src="/fai.jpg" />

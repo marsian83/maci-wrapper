@@ -58,7 +58,7 @@ export default function PollDetail() {
 
   const isAnyInvalid = Object.values(isVotesInvalid).some(v => v);
   const [result, setResult] = useState<{ candidate: string; votes: number }[] | null>(null);
-  const [status, setStatus] = useState<PollStatus>(PollStatus.OPEN);
+  const [status, setStatus] = useState<PollStatus>(PollStatus.RESULT_COMPUTED);
 
   useEffect(() => {
     if (!poll || !poll.metadata) {
